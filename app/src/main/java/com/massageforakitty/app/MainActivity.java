@@ -1,5 +1,6 @@
 package com.massageforakitty.app;
 
+import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.SystemClock;
@@ -9,6 +10,7 @@ import android.widget.*;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Random;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -36,8 +38,10 @@ public class MainActivity extends ActionBarActivity {
 
     public class AsyncTaskHeir extends AsyncTask<Void, Integer, Void> {
 
-        private final int MAX_VALUE = 10;
+        private final int MAX_VALUE = 600;
         private int currentProgress = 0;
+
+        MediaPlayer mPlayer;
 
         @Override
         protected void onPreExecute() {
@@ -49,6 +53,27 @@ public class MainActivity extends ActionBarActivity {
             btnStart.setVisibility(View.INVISIBLE);
 
             imgV.setImageResource(R.drawable.img_pre);
+
+            int num = new Random().nextInt(5) + 1;
+            //mPlayer = MediaPlayer.create(getApplicationContext(), Uri.parse("R.raw.track_" + num));
+            switch (num) {
+                case 1:
+                    mPlayer = MediaPlayer.create(getApplicationContext(), R.raw.track_1);
+                    break;
+                case 2:
+                    mPlayer = MediaPlayer.create(getApplicationContext(), R.raw.track_2);
+                    break;
+                case 3:
+                    mPlayer = MediaPlayer.create(getApplicationContext(), R.raw.track_3);
+                    break;
+                case 4:
+                    mPlayer = MediaPlayer.create(getApplicationContext(), R.raw.track_4);
+                    break;
+                case 5:
+                    mPlayer = MediaPlayer.create(getApplicationContext(), R.raw.track_5);
+                    break;
+            }
+            mPlayer.start();
         }
 
         @Override
@@ -79,6 +104,9 @@ public class MainActivity extends ActionBarActivity {
             TextView txtAsk = (TextView)findViewById(R.id.txtAsk);
             txtAsk.setText("Ну... Вот и все!");
 
+            mPlayer.stop(); //Остановка меложии массажа
+            mPlayer = MediaPlayer.create(getApplicationContext(), R.raw.fin);
+            mPlayer.start();
         }
     }
     //__________________________________________________________________________________________________________________
