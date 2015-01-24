@@ -41,13 +41,13 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        txtAsk = (TextView)findViewById(R.id.txtAsk);
-        progressBar = (ProgressBar)findViewById(R.id.progressBar);
-        txtCurrentProgress = (TextView)findViewById(R.id.txtCurrentProgress);
-        btnStart = (Button)findViewById(R.id.btnStart);
-        imgV = (ImageView)findViewById(R.id.imgV);
+        txtAsk = (TextView) findViewById(R.id.txtAsk);
+        progressBar = (ProgressBar) findViewById(R.id.progressBar);
+        txtCurrentProgress = (TextView) findViewById(R.id.txtCurrentProgress);
+        btnStart = (Button) findViewById(R.id.btnStart);
+        imgV = (ImageView) findViewById(R.id.imgV);
 
-        nm = (NotificationManager)getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
+        nm = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
     }
 
     @Override
@@ -56,6 +56,7 @@ public class MainActivity extends ActionBarActivity {
         nm.cancel(NOTIFICATION_ID);
         SHOW_NOTIFY = false;
     }
+
 
     @Override
     protected void onPause() {
@@ -114,7 +115,11 @@ public class MainActivity extends ActionBarActivity {
 
     public class AsyncTaskHeir extends AsyncTask<Void, Integer, Void> {
 
+        private final int _5_MINUTE = 300;
+        private final int _2_MINUTE = 120;
+
         MediaPlayer mPlayer;
+        MediaPlayer notifyPlayer;
 
         @Override
         protected void onPreExecute() {
@@ -128,24 +133,13 @@ public class MainActivity extends ActionBarActivity {
             imgV.setImageResource(R.drawable.img_pre);
 
             int num = new Random().nextInt(5) + 1;
-            //mPlayer = MediaPlayer.create(getApplicationContext(), Uri.parse("R.raw.track_" + num));
-            switch (num) {
-                case 1:
-                    mPlayer = MediaPlayer.create(getApplicationContext(), R.raw.track_1);
-                    break;
-                case 2:
-                    mPlayer = MediaPlayer.create(getApplicationContext(), R.raw.track_2);
-                    break;
-                case 3:
-                    mPlayer = MediaPlayer.create(getApplicationContext(), R.raw.track_3);
-                    break;
-                case 4:
-                    mPlayer = MediaPlayer.create(getApplicationContext(), R.raw.track_4);
-                    break;
-                case 5:
-                    mPlayer = MediaPlayer.create(getApplicationContext(), R.raw.track_5);
-                    break;
-            }
+
+            /*
+             * Исходя из того, что:
+             * R.raw.track_1 = 2131034113
+             * R.raw.track_5 = 2131034117
+             */
+            mPlayer = MediaPlayer.create(getApplicationContext(), 0x7f050002 + num);
             mPlayer.start();
         }
 
@@ -155,6 +149,7 @@ public class MainActivity extends ActionBarActivity {
                 publishProgress(++currentProgressValue);
                 SystemClock.sleep(1000);
             }
+
             return null;
         }
 
@@ -165,9 +160,22 @@ public class MainActivity extends ActionBarActivity {
             progressBar.setProgress(currentProgressValue);
             txtCurrentProgress.setText("Расслабление... " + getTime(currentProgressValue * 1000));
 
-            if (SHOW_NOTIFY == true) { showNotification(MAX_PROGRESS_VALUE, currentProgressValue); }
+            if (SHOW_NOTIFY == true) {
+                showNotification(MAX_PROGRESS_VALUE, currentProgressValue);
+            }
+
+            if (MAX_PROGRESS_VALUE - currentProgressValue == _5_MINUTE) {
+                notifyPlayer = MediaPlayer.create(getApplicationContext(), R.raw.left_5_min);
+                notifyPlayer.start();
+
+            }
+            if (MAX_PROGRESS_VALUE - currentProgressValue == _2_MINUTE) {
+                notifyPlayer = MediaPlayer.create(getApplicationContext(), R.raw.left_2_min);
+                notifyPlayer.start();
+            }
 
         }
+
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
@@ -177,14 +185,14 @@ public class MainActivity extends ActionBarActivity {
             imgV.setImageResource(R.drawable.img_post);
             Toast.makeText(getApplicationContext(), "А вот и конец :)", Toast.LENGTH_LONG).show();
 
-            TextView txtAsk = (TextView)findViewById(R.id.txtAsk);
+            TextView txtAsk = (TextView) findViewById(R.id.txtAsk);
             txtAsk.setText("Ну... Вот и все!");
 
             mPlayer.stop(); //Остановка меложии массажа
             mPlayer = MediaPlayer.create(getApplicationContext(), R.raw.fin);
             mPlayer.start();
         }
+
     }
     //__________________________________________________________________________________________________________________
-
 }
